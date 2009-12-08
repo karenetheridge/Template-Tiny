@@ -1,4 +1,11 @@
 Changes for Perl extension Template-Tiny
 
-0.01 to be released
+0.02 Tue  8 Dec 2009
+	- Added support for [%- -%]
+	- Added support for recursive simple expressions
+	- Added support for [% IF expr %]
+	- Added support for [% UNLESS expr %]
+	- Added support for [% ELSE %]
+	
+0.01 Sun  6 Dec 2009
 	- Created initial release

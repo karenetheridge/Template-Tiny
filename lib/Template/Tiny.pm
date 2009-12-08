@@ -1,26 +1,74 @@
 package Template::Tiny;
 
+# Load overhead: 40k
+
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.01';
+$Template::Tiny::VERSION = '0.02';
 
 # Parser elements
-my $left  = qr/ (?: (?: \n[ \t]* )? \[\%\- | \[\% \+? ) \s* /x;
-my $right = qr/ \s* (?: \+? \%\] | \-\%\] (?: [ \t]*\n )? ) /x;
-my $expr  = qr/ [a-zA-Z_]\w*       /x;
+my $left   = qr/ (?: (?: \n[ \t]* )? \[\%\- | \[\% \+? ) \s* /x;
+my $right  = qr/ \s* (?: \+? \%\] | \-\%\] (?: [ \t]*\n )? ) /x;
+my $expr   = qr/ [a-zA-Z_][\w.]*                             /x;
+my $if     = qr/ $left \s*IF\s+ ( $expr ) $right             /x;
+my $unless = qr/ $left \s*UNLESS\s+ ( $expr ) $right         /x;
+my $else   = qr/ $left \s*ELSE\s* $right                     /x;
+my $end    = qr/ $left \s*END\s* $right                      /x;
+
+sub new {
+	bless { }, $_[0];
+}
 
 sub process {
 	my $stash = $_[2] || {};
 	my $copy  = ${$_[1]};
+
+	local $@  = '';
 	local $^W = 0;
-	local $@ = '';
+
+	$copy =~ s/
+		$if ( .+? ) $end
+	/
+		my ($left, $right) = split $else, $2;
+		$_[0]->expression($stash, $1) ? $left : $right
+	/gsex;
+
+	$copy =~ s/
+		$unless ( .+? ) $end
+	/
+		$_[0]->expression($stash, $1) ? '' : $2
+	/gsex;
+
 	$copy =~ s/
 		$left ( $expr ) $right
 	/
-		$stash->{$1}
+		$_[0]->expression($stash, $1)
 	/gsex;
+
 	return $copy;
+}
+
+sub expression {
+	my $value = eval {
+		my $cursor = $_[1];
+		my @path   = split /\./, $_[2];
+		foreach ( @path ) {
+			my $type = ref $cursor;
+			if ( $type eq 'ARRAY' ) {
+				return '' unless /^(?:0|[0-9]\d*)\z/;
+				$cursor = $cursor->[$_];
+			} elsif ( $type eq 'HASH' ) {
+				$cursor = $cursor->{$_};
+			} elsif ( $type ) {
+				$cursor = $cursor->$type();
+			} else {
+				return '';
+			}
+		}
+		return "$cursor";
+	};
+	return $value;
 }
 
 1;
@@ -35,7 +83,9 @@ Template::Tiny - Template Toolkit reimplemted with as little code as possible
 
 =head1 SYNOPSIS
 
-  Template::Tiny->process( <<'END_TEMPLATE', { foo => 'World' } );
+  my $template = Template::Tiny->new;
+  
+  $template->process( <<'END_TEMPLATE', { foo => 'World' } );
   Hello [% foo %]!
   END_TEMPLATE
 
@@ -63,15 +113,33 @@ the Perl regular expression engine.
 
 Only the default C<[% %]> tag style is supported.
 
-Only simple interpolations such as [% variable %] are supported.
+Both the [%+ +%] style explicit whitespace and the [%- -%] style explicit
+chomp are support, although the [%+ +%] version is unneeded as Template::Tiny
+does not support default-enabled PRE_CHOMP or POST_CHOMP.
+
+Variable expressions in the form foo.bar.baz are supported.
+
+Appropriate simple behaviours for ARRAY reference, HASH reference and objects
+are supported, but not "VMethods" such as array lengths.
+
+Simple un-nested conditions are supported, but only in the
+most simple varieties, like [% IF foo.bar %] content [% END %] and the UNLESS
+equivalent (to prevent the need to implement expression operators).
 
 Anything beyond this is currently out of scope
 
 =head1 METHODS
 
+=head2 new
+
+  my $template = Template::Tiny->new;
+
+The C<new> constructor is provided for compatibility with Template Toolkit,
+but is not strictly necesary.
+
 =head2 process
 
-  Template::Tiny->process( \$input, $vars );
+  $template->process( \$input, $vars );
 
 The C<process> method is called to process a template. The firsts parameter
 is a reference to a text string containing the template text. A reference
