@@ -17,6 +17,14 @@ closedir( DIR ) or die("closedir($SAMPLES): $!");
 
 plan( tests => scalar(@TEMPLATES) * 5 );
 
+# Test the test classes
+#SCOPE: {
+#	my $false = bless { }, 'False';
+#	my $string = $false . '';
+#	is( $string, 'Hello', 'False objects return ok as a string' );
+#	is( !!$false, '', 'False objects returns false during bool' );
+#}
+
 
 
 
@@ -68,6 +76,15 @@ SCOPE: {
 	sub foo {
 		uc $_[0]->{foo};
 	}
+
+	1;
+}
+
+SCOPE: {
+	package False;
+
+	use overload 'bool' => sub { 0 };
+	use overload '""'   => sub { 'Hello' };
 
 	1;
 }

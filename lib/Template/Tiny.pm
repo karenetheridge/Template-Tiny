@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.04';
+$Template::Tiny::VERSION = '0.05';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-zA-Z_][\w.]* /xs;
@@ -51,38 +51,43 @@ sub process {
 	$copy =~ s/
 		$CONDITION
 	/
-		($1 eq 'UNLESS' xor $_[0]->expression($stash, $2)) ? $3 : $4;
+		eval {
+			$1 eq 'UNLESS'
+			xor
+			!! # Force boolification
+			$_[0]->expression($stash, $2)
+		} ? $3 : $4;
 	/gsex;
 
 	$copy =~ s/
 		$LEFT ( $EXPR ) $RIGHT
 	/
-		$_[0]->expression($stash, $1)
+		eval {
+			$_[0]->expression($stash, $1)
+			. '' # Force stringification
+		}
 	/gsex;
 
 	return $copy;
 }
 
 sub expression {
-	my $value = eval {
-		my $cursor = $_[1];
-		my @path   = split /\./, $_[2];
-		foreach ( @path ) {
-			my $type = ref $cursor;
-			if ( $type eq 'ARRAY' ) {
-				return '' unless /^(?:0|[0-9]\d*)\z/;
-				$cursor = $cursor->[$_];
-			} elsif ( $type eq 'HASH' ) {
-				$cursor = $cursor->{$_};
-			} elsif ( $type ) {
-				$cursor = $cursor->$_();
-			} else {
-				return '';
-			}
+	my $cursor = $_[1];
+	my @path   = split /\./, $_[2];
+	foreach ( @path ) {
+		my $type = ref $cursor;
+		if ( $type eq 'ARRAY' ) {
+			return '' unless /^(?:0|[0-9]\d*)\z/;
+			$cursor = $cursor->[$_];
+		} elsif ( $type eq 'HASH' ) {
+			$cursor = $cursor->{$_};
+		} elsif ( $type ) {
+			$cursor = $cursor->$_();
+		} else {
+			return '';
 		}
-		return "$cursor";
-	};
-	return $value;
+	}
+	return $cursor;
 }
 
 1;

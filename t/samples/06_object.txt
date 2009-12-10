@@ -1,1 +1,3 @@
 BAR
+Hello
+false

@@ -1,3 +1,4 @@
 $VAR1 = {
 	foo => bless( { foo => 'bar' }, 'UpperCase' ),
+	bar => bless( { }, 'False' ),
 };

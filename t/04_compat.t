@@ -80,3 +80,12 @@ SCOPE: {
 
 	1;
 }
+
+SCOPE: {
+	package False;
+
+	use overload 'bool' => sub { 0 };
+	use overload '""'   => sub { 'Hello' };
+
+	1;
+}
