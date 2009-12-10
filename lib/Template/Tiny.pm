@@ -8,10 +8,10 @@ use strict;
 $Template::Tiny::VERSION = '0.04';
 
 # Evaluatable expression
-our $EXPR = qr/ [a-zA-Z_][\w.]* /xs;
+my $EXPR = qr/ [a-zA-Z_][\w.]* /xs;
 
 # Opening [% tag including whitespace chomping rules
-our $LEFT = qr/
+my $LEFT = qr/
 	(?:
 		(?: (?:^|\n) [ \t]* )? \[\%\-
 		|
@@ -19,7 +19,7 @@ our $LEFT = qr/
 	) \s* /xs;
 
 # Closing %] tag including whitespace chomping rules
-our $RIGHT  = qr/
+my $RIGHT  = qr/
 	\s* (?:
 		\+? \%\]
 		|
@@ -27,7 +27,7 @@ our $RIGHT  = qr/
 	) /xs;
 
 # Condition set
-our $CONDITION = qr/
+my $CONDITION = qr/
 	$LEFT (IF|UNLESS) \s+ ( $EXPR ) $RIGHT
 	( .+? )
 	(?:
