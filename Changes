@@ -1,5 +1,11 @@
 Changes for Perl extension Template-Tiny
 
+0.04 Thu 10 Dec 2009
+	- Reduced implementation by 8kb
+	- As a side effect of this, added support for UNLESS/ELSE
+	- Matching behaviour of TT to NOT chomp on -%](space)(EOF)
+	- Switch to Tiny-style Makefile.PL
+
 0.03 Thu 10 Dec 2009
 	- Bug fix for methods in expressions
 	- Added test case for method calls

@@ -5,16 +5,37 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.03';
+$Template::Tiny::VERSION = '0.04';
 
-# Parser elements
-my $left   = qr/ (?: (?: \n[ \t]* )? \[\%\- | \[\% \+? ) \s* /x;
-my $right  = qr/ \s* (?: \+? \%\] | \-\%\] (?: [ \t]*\n )? ) /x;
-my $expr   = qr/ [a-zA-Z_][\w.]*                             /x;
-my $if     = qr/ $left \s*IF\s+ ( $expr ) $right             /x;
-my $unless = qr/ $left \s*UNLESS\s+ ( $expr ) $right         /x;
-my $else   = qr/ $left \s*ELSE\s* $right                     /x;
-my $end    = qr/ $left \s*END\s* $right                      /x;
+# Evaluatable expression
+our $EXPR = qr/ [a-zA-Z_][\w.]* /xs;
+
+# Opening [% tag including whitespace chomping rules
+our $LEFT = qr/
+	(?:
+		(?: (?:^|\n) [ \t]* )? \[\%\-
+		|
+		\[\% \+?
+	) \s* /xs;
+
+# Closing %] tag including whitespace chomping rules
+our $RIGHT  = qr/
+	\s* (?:
+		\+? \%\]
+		|
+		\-\%\] (?: [ \t]* \n )?
+	) /xs;
+
+# Condition set
+our $CONDITION = qr/
+	$LEFT (IF|UNLESS) \s+ ( $EXPR ) $RIGHT
+	( .+? )
+	(?:
+		$LEFT ELSE $RIGHT
+		( .+? )
+	)?
+	$LEFT END $RIGHT
+/xs;
 
 sub new {
 	bless { }, $_[0];
@@ -28,20 +49,13 @@ sub process {
 	local $^W = 0;
 
 	$copy =~ s/
-		$if ( .+? ) $end
+		$CONDITION
 	/
-		my ($left, $right) = split $else, $2;
-		$_[0]->expression($stash, $1) ? $left : $right
+		($1 eq 'UNLESS' xor $_[0]->expression($stash, $2)) ? $3 : $4;
 	/gsex;
 
 	$copy =~ s/
-		$unless ( .+? ) $end
-	/
-		$_[0]->expression($stash, $1) ? '' : $2
-	/gsex;
-
-	$copy =~ s/
-		$left ( $expr ) $right
+		$LEFT ( $EXPR ) $RIGHT
 	/
 		$_[0]->expression($stash, $1)
 	/gsex;
@@ -79,7 +93,7 @@ __END__
 
 =head1 NAME
 
-Template::Tiny - Template Toolkit reimplemted with as little code as possible
+Template::Tiny - Template Toolkit reimplemented in as little code as possible
 
 =head1 SYNOPSIS
 
