@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.02';
+$Template::Tiny::VERSION = '0.03';
 
 # Parser elements
 my $left   = qr/ (?: (?: \n[ \t]* )? \[\%\- | \[\% \+? ) \s* /x;
@@ -61,7 +61,7 @@ sub expression {
 			} elsif ( $type eq 'HASH' ) {
 				$cursor = $cursor->{$_};
 			} elsif ( $type ) {
-				$cursor = $cursor->$type();
+				$cursor = $cursor->$_();
 			} else {
 				return '';
 			}

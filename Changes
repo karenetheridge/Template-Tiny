@@ -1,5 +1,8 @@
 Changes for Perl extension Template-Tiny
 
+0.03 Thu 10 Dec 2009
+	- Bug fix for methods in expressions
+
 0.02 Tue  8 Dec 2009
 	- Added support for [%- -%]
 	- Added support for recursive simple expressions
