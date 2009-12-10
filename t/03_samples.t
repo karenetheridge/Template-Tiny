@@ -54,3 +54,20 @@ sub slurp {
 	close VAR;
 	return $buffer;
 }
+
+
+
+
+
+######################################################################
+# Support Classes for object tests
+
+SCOPE: {
+	package UpperCase;
+
+	sub foo {
+		uc $_[0]->{foo};
+	}
+
+	1;
+}
