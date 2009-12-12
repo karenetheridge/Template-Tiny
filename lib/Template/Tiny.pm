@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.06';
+$Template::Tiny::VERSION = '0.07';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-z_][\w.]* /xs;
@@ -16,7 +16,8 @@ my $LEFT = qr/
 		(?: (?:^|\n) [ \t]* )? \[\%\-
 		|
 		\[\% \+?
-	) \s* /xs;
+	) \s*
+/xs;
 
 # Closing %] tag including whitespace chomping rules
 my $RIGHT  = qr/
@@ -24,25 +25,47 @@ my $RIGHT  = qr/
 		\+? \%\]
 		|
 		\-\%\] (?: [ \t]* \n )?
-	) /xs;
+	)
+/xs;
 
-# Condition set
-my $CONDITION = qr/
-	$LEFT (IF|UNLESS) \s+ ( $EXPR ) $RIGHT
+# Preparsing run for nesting tags
+my $PREPARSE = qr/
+	$LEFT ( IF | UNLESS | FOREACH ) \s+
+		(
+			(?: \S+ \s+ IN \s+ )?
+		\S+ )
+	$RIGHT
 	(?!
 		.*?
-		$LEFT (?: IF | UNLESS )
+		$LEFT (?: IF | UNLESS | FOREACH ) \b
 	)
 	( .*? )
 	(?:
 		$LEFT ELSE $RIGHT
 		(?!
 			.*?
-			$LEFT (?: IF | UNLESS )
+			$LEFT (?: IF | UNLESS | FOREACH ) \b
 		)
 		( .+? )
 	)?
-	$LEFT (?! IF | UNLESS ) END $RIGHT
+	$LEFT END $RIGHT
+/xs;
+
+# Condition set
+my $CONDITION = qr/
+	\[\%\s
+		( ([IUF])\d+ ) \s+
+		(?:
+			([a-z]\w*) \s+ IN \s+
+		)?
+		( $EXPR )
+	\s\%\]
+	( .*? )
+	(?:
+		\[\%\s \1 \s\%\]
+		( .+? )
+	)?
+	\[\%\s \1 \s\%\]
 /xs;
 
 sub new {
@@ -50,36 +73,76 @@ sub new {
 }
 
 sub process {
-	my $stash = $_[2] || {};
-	my $copy  = ${$_[1]};
+	my $self  = shift;
+	my $copy  = ${shift()};
+	my $stash = shift || {};
 
 	local $@  = '';
 	local $^W = 0;
 
+	# Preprocess to establish unique matching tag sets
+	my $id = 0;
 	1 while $copy =~ s/
-		$CONDITION
+		$PREPARSE
 	/
-		eval {
-			$1 eq 'UNLESS'
-			xor
-			!! # Force boolification
-			$_[0]->expression($stash, $2)
-		} ? $3 : $4;
+		my $tag = substr($1, 0, 1) . ++$id;
+		"\[\% $tag $2 \%\]$3\[\% $tag \%\]"
+		. (defined($4) ? "$4\[\% $tag \%\]" : '');
 	/gsex;
 
-	$copy =~ s/
+	# Process down the nested tree of conditions
+	$self->_process( $stash, $copy );
+}
+
+sub _process {
+	my ($self, $stash, $text) = @_;
+
+	1 while $text =~ s/
+		$CONDITION
+	/
+		($2 eq 'F')
+			? $self->_foreach($stash, $3, $4, $5)
+			: eval {
+				$2 eq 'U'
+				xor
+				!! # Force boolification
+				$self->_expression($stash, $4)
+			}
+				? $self->_process($stash, $5)
+				: $self->_process($stash, $6)
+	/gsex;
+
+	# Resolve expressions
+	$text =~ s/
 		$LEFT ( $EXPR ) $RIGHT
 	/
 		eval {
-			$_[0]->expression($stash, $1)
+			$self->_expression($stash, $1)
 			. '' # Force stringification
 		}
 	/gsex;
 
-	return $copy;
+	return $text;
 }
 
-sub expression {
+# Special handling for foreach
+sub _foreach {
+	my ($self, $stash, $term, $expr, $text) = @_;
+
+	# Resolve the expression
+	my $list = $self->_expression($stash, $expr);
+	unless ( ref $list eq 'ARRAY' ) {
+		return '';
+	}
+
+	# Iterate
+	return join '', map {
+		$self->_process( { %$stash, $term => $_ }, $text )
+	} @$list;
+}
+
+# Evaluates a stash expression
+sub _expression {
 	my $cursor = $_[1];
 	my @path   = split /\./, $_[2];
 	foreach ( @path ) {
