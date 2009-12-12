@@ -15,7 +15,7 @@ unless ( -d $SAMPLES ) {
 }
 
 opendir( DIR, $SAMPLES ) or die("opendir($SAMPLES): $!");
-my @TEMPLATES = grep { /\.tt$/ } readdir(DIR);
+my @TEMPLATES = sort grep { /\.tt$/ } readdir(DIR);
 closedir( DIR ) or die("closedir($SAMPLES): $!");
 
 plan( tests => scalar(@TEMPLATES) * 6 + 1 );

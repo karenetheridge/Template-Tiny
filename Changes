@@ -1,5 +1,8 @@
 Changes for Perl extension Template-Tiny
 
+0.06 Sun 13 Dec 2009
+	- Added support for nested [% IF %] and [% UNLESS %] conditions
+
 0.05 Thu 10 Dec 2009
 	- Expression chains in a condition that terminate in an object
 	  will boolify the object instead of stringifying it + tests for it

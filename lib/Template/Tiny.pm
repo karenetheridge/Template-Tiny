@@ -5,10 +5,10 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.05';
+$Template::Tiny::VERSION = '0.06';
 
 # Evaluatable expression
-my $EXPR = qr/ [a-zA-Z_][\w.]* /xs;
+my $EXPR = qr/ [a-z_][\w.]* /xs;
 
 # Opening [% tag including whitespace chomping rules
 my $LEFT = qr/
@@ -29,12 +29,20 @@ my $RIGHT  = qr/
 # Condition set
 my $CONDITION = qr/
 	$LEFT (IF|UNLESS) \s+ ( $EXPR ) $RIGHT
-	( .+? )
+	(?!
+		.*?
+		$LEFT (?: IF | UNLESS )
+	)
+	( .*? )
 	(?:
 		$LEFT ELSE $RIGHT
+		(?!
+			.*?
+			$LEFT (?: IF | UNLESS )
+		)
 		( .+? )
 	)?
-	$LEFT END $RIGHT
+	$LEFT (?! IF | UNLESS ) END $RIGHT
 /xs;
 
 sub new {
@@ -48,7 +56,7 @@ sub process {
 	local $@  = '';
 	local $^W = 0;
 
-	$copy =~ s/
+	1 while $copy =~ s/
 		$CONDITION
 	/
 		eval {
