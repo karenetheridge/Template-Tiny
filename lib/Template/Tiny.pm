@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.07';
+$Template::Tiny::VERSION = '0.08';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-z_][\w.]* /xs;
@@ -88,7 +88,7 @@ sub process {
 		my $tag = substr($1, 0, 1) . ++$id;
 		"\[\% $tag $2 \%\]$3\[\% $tag \%\]"
 		. (defined($4) ? "$4\[\% $tag \%\]" : '');
-	/gsex;
+	/sex;
 
 	# Process down the nested tree of conditions
 	$self->_process( $stash, $copy );
@@ -97,7 +97,7 @@ sub process {
 sub _process {
 	my ($self, $stash, $text) = @_;
 
-	1 while $text =~ s/
+	$text =~ s/
 		$CONDITION
 	/
 		($2 eq 'F')
@@ -212,9 +212,14 @@ Variable expressions in the form foo.bar.baz are supported.
 Appropriate simple behaviours for ARRAY reference, HASH reference and objects
 are supported, but not "VMethods" such as array lengths.
 
-Simple un-nested conditions are supported, but only in the
-most simple varieties, like [% IF foo.bar %] content [% END %] and the UNLESS
-equivalent (to prevent the need to implement expression operators).
+IF, ELSE and UNLESS conditions are supported, but only with simple foo.bar.baz
+conditions.
+
+Support for looping is available, in the most simple [% FOREACH item IN list %]
+form.
+
+All four IF/ELSE/UNLESS/FOREACH control structures are able to be nested to
+arbitrary depth.
 
 Anything beyond this is currently out of scope
 
