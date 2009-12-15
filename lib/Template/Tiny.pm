@@ -225,6 +225,10 @@ form.
 All four IF/ELSE/UNLESS/FOREACH control structures are able to be nested to
 arbitrary depth.
 
+The treatment of C<_private> hash and method keys is compatible with Template
+Toolkit, returning null or false rather than the actual content of the hash key
+or method.
+
 Anything beyond this is currently out of scope
 
 =head1 METHODS
