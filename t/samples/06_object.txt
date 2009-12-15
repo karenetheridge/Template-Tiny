@@ -1,3 +1,5 @@
 BAR
 Hello
 false
+public  = 'foo'
+private = ''

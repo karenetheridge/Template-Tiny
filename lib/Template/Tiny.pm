@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.08';
+$Template::Tiny::VERSION = '0.09';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-z_][\w.]* /xs;
@@ -146,6 +146,10 @@ sub _expression {
 	my $cursor = $_[1];
 	my @path   = split /\./, $_[2];
 	foreach ( @path ) {
+		# Support for private keys
+		return undef if substr($_, 0, 1) eq '_';
+
+		# Split by data type
 		my $type = ref $cursor;
 		if ( $type eq 'ARRAY' ) {
 			return '' unless /^(?:0|[0-9]\d*)\z/;

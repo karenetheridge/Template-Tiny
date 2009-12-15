@@ -1,5 +1,8 @@
 Changes for Perl extension Template-Tiny
 
+0.09 Wed 16 Dec 2009
+	- Adding support for "private" _foo keys
+
 0.08 Sun 13 Dec 2009
 	- Removing some minor code no longer needed.
 	- Updating the POD documentation

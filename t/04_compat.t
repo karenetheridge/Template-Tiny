@@ -89,3 +89,12 @@ SCOPE: {
 
 	1;
 }
+
+SCOPE: {
+	package Private;
+
+	sub public   { 'foo' }
+	sub _private { 'foo' }
+
+	1;
+}
