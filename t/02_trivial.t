@@ -1,6 +1,10 @@
 #!/usr/bin/perl
 
 use strict;
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
 use Test::More tests => 1;
 use Template::Tiny ();
 
@@ -9,7 +13,7 @@ sub process {
 	my $input    = shift;
 	my $expected = shift;
 	my $message  = shift || 'Template processed ok';
-	my $output   = Template::Tiny->process( \$input, $stash );
+	my $output   = Template::Tiny->new->process( \$input, $stash );
 	is( $output, $expected, $message );
 }
 

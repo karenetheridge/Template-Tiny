@@ -1,7 +1,11 @@
 #!/usr/bin/perl
 
 use strict;
-use vars qw{$VAR1};
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
+use vars qw{$VAR1 $VAR2};
 use Test::More;
 use File::Spec::Functions ':ALL';
 eval "require Template";
@@ -18,12 +22,7 @@ opendir( DIR, $SAMPLES ) or die("opendir($SAMPLES): $!");
 my @TEMPLATES = sort grep { /\.tt$/ } readdir(DIR);
 closedir( DIR ) or die("closedir($SAMPLES): $!");
 
-plan( tests => scalar(@TEMPLATES) * 6 + 1 );
-
-my $template = Template->new(
-	INCLUDE_PATH => $SAMPLES,
-);
-isa_ok( $template, 'Template' );
+plan( tests => scalar(@TEMPLATES) * 7);
 
 
 
@@ -48,6 +47,14 @@ foreach my $name ( @TEMPLATES ) {
 	my $txt = slurp($txt_file);
 	eval $var; die $@ if $@;
 	is( ref($VAR1), 'HASH', "$name: Loaded stash from file" );
+
+	# Create the template processor
+	my %params = (
+		INCLUDE_PATH => $SAMPLES,
+	);
+	%params = ( %params, %$VAR2 ) if $VAR2;
+	my $template = Template->new(%params);
+	isa_ok( $template, 'Template' );
 
 	# Execute the template
 	my $out = '';

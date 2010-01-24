@@ -1,7 +1,11 @@
 #!/usr/bin/perl
 
 use strict;
-use vars qw{$VAR1};
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
+use vars qw{$VAR1 $VAR2};
 use Test::More;
 use File::Spec::Functions ':ALL';
 use Template::Tiny ();
@@ -15,7 +19,7 @@ opendir( DIR, $SAMPLES ) or die("opendir($SAMPLES): $!");
 my @TEMPLATES = sort grep { /\.tt$/ } readdir(DIR);
 closedir( DIR ) or die("closedir($SAMPLES): $!");
 
-plan( tests => scalar(@TEMPLATES) * 5 );
+plan( tests => scalar(@TEMPLATES) * 6 );
 
 # Test the test classes
 #SCOPE: {
@@ -49,8 +53,16 @@ foreach my $template ( @TEMPLATES ) {
 	eval $var; die $@ if $@;
 	is( ref($VAR1), 'HASH', "$template: Loaded stash from file" );
 
+	# Create the processor normally
+	my %params = (
+		INCLUDE_PATH => $SAMPLES,
+	);
+	%params = ( %params, %$VAR2 ) if $VAR2;
+	my $template = Template::Tiny->new(%params);
+	isa_ok( $template, 'Template::Tiny' );
+
 	# Execute the template
-	my $out = Template::Tiny->process( \$tt, $VAR1 );
+	my $out = $template->process( \$tt, $VAR1 );
 	is( $out, $txt, "$template: Output matches expected" );
 }
 

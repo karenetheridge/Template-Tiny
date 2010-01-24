@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.09';
+$Template::Tiny::VERSION = '0.10';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-z_][\w.]* /xs;
@@ -69,7 +69,7 @@ my $CONDITION = qr/
 /xs;
 
 sub new {
-	bless { @_ }, $_[0];
+	bless { @_[1..$#_] }, $_[0];
 }
 
 sub process {
@@ -180,7 +180,9 @@ Template::Tiny - Template Toolkit reimplemented in as little code as possible
 
 =head1 SYNOPSIS
 
-  my $template = Template::Tiny->new;
+  my $template = Template::Tiny->new(
+      TRIM => 1,
+  );
   
   $template->process( <<'END_TEMPLATE', { foo => 'World' } );
   Hello [% foo %]!
@@ -193,7 +195,7 @@ B<WARNING: THIS MODULE IS EXPERIMENTAL AND SUBJECT TO CHANGE WITHOUT NOTICE>
 B<YOU HAVE BEEN WARNED!>
 
 B<Template::Tiny> is a reimplementation of a partial subset of the
-L<Template> Toolkit, in as few lines of code as possible.
+L<Template> Toolkit in as few lines of code as possible.
 
 It is intended for use in light-usage, low-memory, or low-cpu templating
 situations, where you may need to upgrade to the full feature set in the
@@ -238,10 +240,16 @@ Anything beyond this is currently out of scope
 
 =head2 new
 
-  my $template = Template::Tiny->new;
+  my $template = Template::Tiny->new(
+      TRIM => 1,
+  );
 
-The C<new> constructor is provided for compatibility with Template Toolkit,
-but is not strictly necesary.
+The C<new> constructor is provided for compatibility with Template Toolkit.
+
+The only parameter it currently supports is C<TRIM> (which removes leading
+and trailing whitespace from processed templates).
+
+Additional parameters can be provided without error, but will be ignored.
 
 =head2 process
 
@@ -270,7 +278,7 @@ L<Config::Simple>
 
 =head1 COPYRIGHT
 
-Copyright 2009 Adam Kennedy.
+Copyright 2009 - 2010 Adam Kennedy.
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.

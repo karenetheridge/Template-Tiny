@@ -1,7 +1,10 @@
 Changes for Perl extension Template-Tiny
 
-0.10 to be released
-	- Adding for the constructor TRIM param
+0.10 Sun 24 Jan 2010
+	- The use of the constructor is now compulsory, as per Template.pm
+	- Adding support for constructor params
+	- Adding support for constructor TRIM param
+	- The process method now works in both static and instance modes
 
 0.09 Wed 16 Dec 2009
 	- Adding support for "private" _foo keys
