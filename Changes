@@ -1,5 +1,8 @@
 Changes for Perl extension Template-Tiny
 
+0.10 to be released
+	- Adding for the constructor TRIM param
+
 0.09 Wed 16 Dec 2009
 	- Adding support for "private" _foo keys
 

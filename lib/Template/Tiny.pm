@@ -69,7 +69,7 @@ my $CONDITION = qr/
 /xs;
 
 sub new {
-	bless { }, $_[0];
+	bless { @_ }, $_[0];
 }
 
 sub process {
@@ -121,6 +121,9 @@ sub _process {
 			. '' # Force stringification
 		}
 	/gsex;
+
+	# Trim the document
+	$text =~ s/^\s*(.+?)\s*\z/$1/s if $self->{TRIM};
 
 	return $text;
 }
