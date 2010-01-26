@@ -1,5 +1,8 @@
 Changes for Perl extension Template-Tiny
 
+0.11 Tue 26 Jan 2010
+	- Adding preparse-specific test script
+
 0.10 Sun 24 Jan 2010
 	- The use of the constructor is now compulsory, as per Template.pm
 	- Adding support for constructor params

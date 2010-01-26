@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.10';
+$Template::Tiny::VERSION = '0.11';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-z_][\w.]* /xs;
@@ -81,17 +81,27 @@ sub process {
 	local $^W = 0;
 
 	# Preprocess to establish unique matching tag sets
+	$self->_preparse( \$copy );
+
+	# Process down the nested tree of conditions
+	$self->_process( $stash, $copy );
+}
+
+# The only reason this is a standalone is so we can
+# do more in-depth testing.
+sub _preparse {
+	my $self = shift;
+	my $copy = shift;
+
+	# Preprocess to establish unique matching tag sets
 	my $id = 0;
-	1 while $copy =~ s/
+	1 while $$copy =~ s/
 		$PREPARSE
 	/
 		my $tag = substr($1, 0, 1) . ++$id;
 		"\[\% $tag $2 \%\]$3\[\% $tag \%\]"
 		. (defined($4) ? "$4\[\% $tag \%\]" : '');
 	/sex;
-
-	# Process down the nested tree of conditions
-	$self->_process( $stash, $copy );
 }
 
 sub _process {
