@@ -62,7 +62,7 @@ foreach my $template ( @TEMPLATES ) {
 	isa_ok( $template, 'Template::Tiny' );
 
 	# Execute the template
-	my $out = $template->process( \$tt, $VAR1 );
+	$template->process( \$tt, $VAR1, \my $out );
 	is( $out, $txt, "$template: Output matches expected" );
 }
 

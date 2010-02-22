@@ -84,7 +84,13 @@ sub process {
 	$self->_preparse( \$copy );
 
 	# Process down the nested tree of conditions
-	$self->_process( $stash, $copy );
+
+	my $result = $self->_process( $stash, $copy );
+	if (@_) {
+		${$_[0]} = $result;
+	} else {
+		print $result;
+	}
 }
 
 # The only reason this is a standalone is so we can
@@ -264,11 +270,15 @@ Additional parameters can be provided without error, but will be ignored.
 =head2 process
 
   $template->process( \$input, $vars );
+  $template->process( \$input, $vars, \my $output );
 
-The C<process> method is called to process a template. The firsts parameter
+The C<process> method is called to process a template. The first parameter
 is a reference to a text string containing the template text. A reference
 to a hash may be passed as the second parameter containing definitions of
-template variables.
+template variables. If a third parameter is provided, it must be a scalar
+reference to be populated with the output of the template. If it is not
+provided, the output will be print()ed to the currently selected file
+handle (probably STDOUT). 
 
 =head1 SUPPORT
 

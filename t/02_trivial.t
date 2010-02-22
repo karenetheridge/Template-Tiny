@@ -5,16 +5,21 @@ BEGIN {
 	$|  = 1;
 	$^W = 1;
 }
-use Test::More tests => 1;
+use Test::More tests => 2;
 use Template::Tiny ();
+use Capture::Tiny qw(capture);
 
 sub process {
 	my $stash    = shift;
 	my $input    = shift;
 	my $expected = shift;
 	my $message  = shift || 'Template processed ok';
-	my $output   = Template::Tiny->new->process( \$input, $stash );
+	Template::Tiny->new->process( \$input, $stash, \my $output );
 	is( $output, $expected, $message );
+	my ( $stdout, $stderr) = capture {
+		Template::Tiny->new->process( \$input, $stash );
+	};
+	is( $stdout, $expected, $message.' (to STDOUT)' );
 }
 
 

@@ -1,5 +1,7 @@
 Changes for Perl extension Template-Tiny
 
+	- Add compatibility with the horrible TT process() signature (MSTROUT)
+
 0.11 Tue 26 Jan 2010
 	- Adding preparse-specific test script
 

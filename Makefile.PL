@@ -17,6 +17,7 @@ WriteMakefile1(
 		# Skip on Windows to avoid breaking ActivePerl PPMs
 		# 0.47 means 5.6.2 or newer, which everyone on Win32 has.
 		($^O eq 'MSWin32' ? () : ('Test::More' => '0.47')),
+		'Capture::Tiny' => '0.07',
 	},
 	NAME      => 'Template::Tiny',
 	ABSTRACT  => 'Template Toolkit reimplemented in as little code as possible',
