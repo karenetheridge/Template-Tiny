@@ -5,7 +5,7 @@ package Template::Tiny;
 use 5.00503;
 use strict;
 
-$Template::Tiny::VERSION = '0.11';
+$Template::Tiny::VERSION = '0.12';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-z_][\w.]* /xs;
@@ -72,6 +72,14 @@ sub new {
 	bless { @_[1..$#_] }, $_[0];
 }
 
+# Copy and modify
+sub preprocess {
+	my $self = shift;
+	my $text = shift;
+	$self->_preprocess(\$text);
+	return $text;
+}
+
 sub process {
 	my $self  = shift;
 	my $copy  = ${shift()};
@@ -81,7 +89,7 @@ sub process {
 	local $^W = 0;
 
 	# Preprocess to establish unique matching tag sets
-	$self->_preparse( \$copy );
+	$self->_preprocess( \$copy );
 
 	# Process down the nested tree of conditions
 	my $result = $self->_process( $stash, $copy );
@@ -96,9 +104,16 @@ sub process {
 	}
 }
 
+
+
+
+
+######################################################################
+# Support Methods
+
 # The only reason this is a standalone is so we can
 # do more in-depth testing.
-sub _preparse {
+sub _preprocess {
 	my $self = shift;
 	my $copy = shift;
 
@@ -232,29 +247,30 @@ the Perl regular expression engine.
 
 Only the default C<[% %]> tag style is supported.
 
-Both the [%+ +%] style explicit whitespace and the [%- -%] style explicit
-chomp are support, although the [%+ +%] version is unneeded as Template::Tiny
-does not support default-enabled PRE_CHOMP or POST_CHOMP.
+Both the C<[%+ +%]> style explicit whitespace and the C<[%- -%]> style
+explicit chomp are support, although the C<[%+ +%]> version is unneeded
+as B<Template::Tiny> does not support default-enabled C<PRE_CHOMP> or
+C<POST_CHOMP>.
 
-Variable expressions in the form foo.bar.baz are supported.
+Variable expressions in the form C<[% foo.bar.baz %]> are supported.
 
-Appropriate simple behaviours for ARRAY reference, HASH reference and objects
-are supported, but not "VMethods" such as array lengths.
+Appropriate simple behaviours for C<ARRAY> reference, C<HASH> reference and
+objects are supported, but not "VMethods" such as array lengths.
 
-IF, ELSE and UNLESS conditions are supported, but only with simple foo.bar.baz
-conditions.
+C<IF>, C<ELSE> and C<UNLESS> conditions are supported, but only with simple
+C<[% foo.bar.baz %]> conditions.
 
-Support for looping is available, in the most simple [% FOREACH item IN list %]
-form.
+Support for looping is available, in the most simple
+C<[% FOREACH item IN list %]> form.
 
-All four IF/ELSE/UNLESS/FOREACH control structures are able to be nested to
-arbitrary depth.
+All four C<IF>/C<ELSE>/C<UNLESS>/C<FOREACH> control structures are able to be
+nested to arbitrary depth.
 
-The treatment of C<_private> hash and method keys is compatible with Template
-Toolkit, returning null or false rather than the actual content of the hash key
-or method.
+The treatment of C<_private> hash and method keys is compatible with
+L<Template> Toolkit, returning null or false rather than the actual content
+of the hash key or method.
 
-Anything beyond this is currently out of scope
+Anything beyond the above is currently out of scope
 
 =head1 METHODS
 
@@ -285,19 +301,19 @@ Additional parameters can be provided without error, but will be ignored.
 
 The C<process> method is called to process a template.
 
-The first parameter is a reference to a text string containing the
-template text. A reference to a hash may be passed as the second
-parameter containing definitions of template variables.
+The first parameter is a reference to a text string containing the template
+text. A reference to a hash may be passed as the second parameter containing
+definitions of template variables.
 
 If a third parameter is provided, it must be a scalar reference to be
 populated with the output of the template.
 
-For a limited amount of time, the old deprecated interface will continue
-to be supported. If C<process> is called without a third parameter, and in
+For a limited amount of time, the old deprecated interface will continue to
+be supported. If C<process> is called without a third parameter, and in
 scalar or list contest, the template results will be returned to the caller.
 
 If C<process> is called without a third parameter, and in void context, the
-template results will be print()ed to the currently selected file handle
+template results will be C<print()>ed to the currently selected file handle
 (probably C<STDOUT>) for compatibility with L<Template>.
 
 =head1 SUPPORT

@@ -5,15 +5,16 @@ BEGIN {
 	$|  = 1;
 	$^W = 1;
 }
-use Test::More tests => 3;
+use Test::More tests => 6;
 use Template::Tiny ();
 
-sub preparse {
-	my $template = shift;
-	my $expected = shift;
-	my $message  = shift || 'Template preparsed ok';
-	Template::Tiny->new->_preparse( \$template );
-	is( $template, $expected, $message );
+sub preprocess {
+	my $template = $_[0];
+	my $expected = $_[1];
+	my $message  = $_[2] || 'Template preprocessd ok';
+	my $prepared = Template::Tiny->new->preprocess( $template );
+	is( $prepared, $expected, $message );
+	is( $template, $_[0], '->proprocess does not modify original template variable' );
 }
 
 
@@ -23,7 +24,7 @@ sub preparse {
 ######################################################################
 # Main Tests
 
-preparse( <<'END_TEMPLATE', <<'END_EXPECTED', 'Simple IF' );
+preprocess( <<'END_TEMPLATE', <<'END_EXPECTED', 'Simple IF' );
 foo
 [% IF foo %]
 foobar
@@ -37,7 +38,7 @@ foobar
 bar
 END_EXPECTED
 
-preparse( <<'END_TEMPLATE', <<'END_EXPECTED', 'Simple UNLESS' );
+preprocess( <<'END_TEMPLATE', <<'END_EXPECTED', 'Simple UNLESS' );
 foo
 [% UNLESS foo %]
 foobar
@@ -51,7 +52,7 @@ foobar
 bar
 END_EXPECTED
 
-preparse( <<'END_TEMPLATE', <<'END_EXPECTED', 'Simple FOREACH' );
+preprocess( <<'END_TEMPLATE', <<'END_EXPECTED', 'Simple FOREACH' );
 foo
 [% FOREACH element IN lists %]
 foobar
