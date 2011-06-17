@@ -1,8 +1,13 @@
 Changes for Perl extension Template-Tiny
 
+1.12 Fri 17 Jun 2011
+	- Template::Tiny is unchanged for a year, moving to stable release
+	- Cleaning up POD grammar a bit (ADAMK)
+	- Removing test dependency on Capture::Tiny for tiny purity (ADAMK)
+
 0.11 Mon 22 Feb 2010
-	- Adding preparse-specific test script
-	- Add compatibility with the horrible TT process()  signature (MSTROUT)
+	- Adding preparse-specific test script (ADAMK)
+	- Add compatibility with the horrible TT process() signature (MSTROUT)
 
 0.10 Sun 24 Jan 2010
 	- The use of the constructor is now compulsory, as per Template.pm
