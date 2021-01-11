@@ -1,5 +1,8 @@
 Changes for Perl extension Template-Tiny
 
+{{$NEXT}}
+          - distribution tooling updates
+
 1.12      2011-06-17
           - Template::Tiny is unchanged for a year, moving to stable release
           - Cleaning up POD grammar a bit (ADAMK)

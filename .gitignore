@@ -1,0 +1,6 @@
+/.ackrc
+/.build/
+!/.gitignore
+/.latest
+/Template-Tiny-*/
+/Template-Tiny-*.tar.gz

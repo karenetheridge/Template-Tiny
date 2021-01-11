@@ -1,4 +1,6 @@
 package Template::Tiny;
+# ABSTRACT: Template Toolkit reimplemented in as little code as possible
+
 
 # Load overhead: 40k
 
@@ -207,10 +209,6 @@ __END__
 
 =pod
 
-=head1 NAME
-
-Template::Tiny - Template Toolkit reimplemented in as little code as possible
-
 =head1 SYNOPSIS
 
   my $template = Template::Tiny->new(
@@ -316,30 +314,8 @@ If C<process> is called without a third parameter, and in void context, the
 template results will be C<print()>ed to the currently selected file handle
 (probably C<STDOUT>) for compatibility with L<Template>.
 
-=head1 SUPPORT
-
-Bugs should be reported via the CPAN bug tracker at
-
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Template-Tiny>
-
-For other issues, or commercial enhancement or support, contact the author.
-
-=head1 AUTHOR
-
-Adam Kennedy E<lt>adamk@cpan.orgE<gt>
-
 =head1 SEE ALSO
 
 L<Config::Tiny>, L<CSS::Tiny>, L<YAML::Tiny>
-
-=head1 COPYRIGHT
-
-Copyright 2009 - 2011 Adam Kennedy.
-
-This program is free software; you can redistribute
-it and/or modify it under the same terms as Perl itself.
-
-The full text of the license can be found in the
-LICENSE file included with this module.
 
 =cut
