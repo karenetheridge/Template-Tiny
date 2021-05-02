@@ -8,7 +8,7 @@ Template::Tiny - Template Toolkit reimplemented in as little code as possible
 
 =head1 VERSION
 
-version 1.13
+version 1.14
 
 =head1 SYNOPSIS
 
@@ -117,7 +117,7 @@ template results will be C<print()>ed to the currently selected file handle
 
 =head1 SEE ALSO
 
-L<Config::Tiny>, L<CSS::Tiny>, L<YAML::Tiny>
+L<Template::Tiny::Strict>, L<Config::Tiny>, L<CSS::Tiny>, L<YAML::Tiny>
 
 =head1 SUPPORT
 
