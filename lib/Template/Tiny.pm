@@ -316,6 +316,6 @@ template results will be C<print()>ed to the currently selected file handle
 
 =head1 SEE ALSO
 
-L<Config::Tiny>, L<CSS::Tiny>, L<YAML::Tiny>
+L<Template::Tiny::Strict>, L<Config::Tiny>, L<CSS::Tiny>, L<YAML::Tiny>
 
 =cut

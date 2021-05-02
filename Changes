@@ -1,6 +1,7 @@
 Changes for Perl extension Template-Tiny
 
 {{$NEXT}}
+          - add link to Template::Tiny::Strict
 
 1.13      2021-01-30 17:28:27Z
           - distribution tooling updates
