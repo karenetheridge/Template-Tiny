@@ -1,6 +1,7 @@
 Changes for Perl extension Template-Tiny
 
 {{$NEXT}}
+          - Allow configurable start/end tags (CROMEDOME)
 
 1.14      2021-05-02 16:48:45Z
           - add link to Template::Tiny::Strict
