@@ -284,6 +284,8 @@ Anything beyond the above is currently out of scope.
 
 =head1 METHODS
 
+=for Pod::Coverage preprocess
+
 =head2 new
 
   my $template = Template::Tiny->new(
