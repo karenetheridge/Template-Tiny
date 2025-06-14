@@ -6,7 +6,7 @@ package Template::Tiny;
 
 use strict;
 
-our $VERSION = '1.15';
+our $VERSION = '1.16';
 
 # Evaluatable expression
 my $EXPR = qr/ [a-z_][\w.]* /xs;
