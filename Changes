@@ -1,6 +1,6 @@
 Changes for Perl extension Template-Tiny
 
-{{$NEXT}}
+1.15      2025-06-14 15:33:27Z
           - Allow configurable start/end tags (CROMEDOME). This achieves full
             feature parity with Dancer2::Template::ForkedImplementation::Tiny.
 

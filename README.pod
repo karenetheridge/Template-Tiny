@@ -8,14 +8,14 @@ Template::Tiny - Template Toolkit reimplemented in as little code as possible
 
 =head1 VERSION
 
-version 1.14
+version 1.15
 
 =head1 SYNOPSIS
 
   my $template = Template::Tiny->new(
       TRIM => 1,
   );
-  
+
   # Print the template results to STDOUT
   $template->process( <<'END_TEMPLATE', { foo => 'World' } );
   Hello [% foo %]!
@@ -40,7 +40,13 @@ the Perl regular expression engine.
 
 =head2 SUPPORTED USAGE
 
-Only the default C<[% %]> tag style is supported.
+Unless otherwise specified, the default Template Toolkit C<[% %]> tag style
+is used. If you want to use different opening and closing tags, specify
+these when creating your B<Template::Tiny> object:
+
+    my $template = Template::Tiny->new( start_tag => '<%', end_tag => '%>' );
+
+(for the remainder of the documentation, C<[% %]> tags are assumed)
 
 Both the C<[%+ +%]> style explicit whitespace and the C<[%- -%]> style
 explicit chomp B<are> support, although the C<[%+ +%]> version is unneeded
@@ -73,16 +79,35 @@ Anything beyond the above is currently out of scope.
 
 =head1 METHODS
 
+=for Pod::Coverage preprocess
+
 =head2 new
 
   my $template = Template::Tiny->new(
-      TRIM => 1,
+      TRIM      => 1,
+      start_tag => '<%',
+      end_tag   => '%>',
   );
 
 The C<new> constructor is provided for compatibility with Template Toolkit.
 
-The only parameter it currently supports is C<TRIM> (which removes leading
-and trailing whitespace from processed templates).
+The only parameters currently supported are:
+
+=over
+
+=item TRIM
+
+Removes leading and trailing whitespace from processed templates)
+
+=item start_tag
+
+Changes the starting tag identifier from C<[%>
+
+=item end_tag
+
+Changes the ending tag identifier from C<%]>
+
+=back
 
 Additional parameters can be provided without error, but will be ignored.
 
@@ -90,10 +115,10 @@ Additional parameters can be provided without error, but will be ignored.
 
   # DEPRECATED: Return template results (emits a warning)
   my $text = $template->process( \$input, $vars );
-  
+
   # Print template results to STDOUT
   $template->process( \$input, $vars );
-  
+
   # Generate template results into a variable
   my $output = '';
   $template->process( \$input, $vars, \$output );
@@ -130,7 +155,7 @@ Adam Kennedy <adamk@cpan.org>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Adam Kennedy Karen Etheridge Alexandr Ciornii Matt S Trout
+=for stopwords Adam Kennedy Karen Etheridge Jason A. Crome Alexandr Ciornii Matt S Trout
 
 =over 4
 
@@ -141,6 +166,10 @@ Adam Kennedy <adam@ali.as>
 =item *
 
 Karen Etheridge <ether@cpan.org>
+
+=item *
+
+Jason A. Crome <jason@crome-plated.com>
 
 =item *
 
