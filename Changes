@@ -1,5 +1,7 @@
 Changes for Perl extension Template-Tiny
 
+{{$NEXT}}
+
 1.16      2025-06-17 17:21:03Z
           - Evaluate coderefs and insert results in template (CROMEDOME).
             This achieves full feature parity with
