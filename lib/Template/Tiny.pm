@@ -206,6 +206,9 @@ sub _expression {
 			return '';
 		}
 	}
+
+    # If the last expression is a coderef, execute it.
+    ref $cursor eq 'CODE' and $cursor = $cursor->();
 	return $cursor;
 }
 
